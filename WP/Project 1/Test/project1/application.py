@@ -35,4 +35,4 @@ def register():
     email = request.form['email']
     psw = request.form['psw']
     print(email,psw)
-    return email
+    return "Successfully submited your details  " + email
