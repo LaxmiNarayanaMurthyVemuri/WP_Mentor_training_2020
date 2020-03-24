@@ -28,11 +28,16 @@ db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/")
 def index():
-    return render_template("register.html")
+	return "web site under construction"
 
-@app.route("/register",methods=['POST'])
+
+
+@app.route("/register",methods=['GET','POST'])
 def register():
-    email = request.form['email']
-    psw = request.form['psw']
-    print(email,psw)
-    return "Successfully submited your details  " + email
+	if request.method == 'GET':
+		return render_template("register.html")
+	elif request.method == 'POST':
+	    email = request.form['email']
+	    psw = request.form['psw']
+	    print(email,psw)
+	    return "Successfully submited your details  " + email
