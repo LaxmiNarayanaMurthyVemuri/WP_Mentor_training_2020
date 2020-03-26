@@ -33,7 +33,10 @@ Base.metadata.create_all(bind=engine)
 def index():
 	return "web site under construction"
 
-
+@app.route("/admin")
+def admin():
+	users = db_session.query(User)
+	return render_template("list.html", value=users)
 
 @app.route("/register",methods=['GET','POST'])
 def register():
