@@ -1,5 +1,4 @@
 import os
-
 from flask import Flask, session
 from flask import render_template
 from flask import request
@@ -8,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-
+from models import User
 
 
 app = Flask(__name__)
@@ -28,12 +27,7 @@ engine = create_engine(os.getenv("DATABASE_URL"))
 db_session = scoped_session(sessionmaker(bind=engine))
 Base = declarative_base()
 Base.query = db_session.query_property()
-
-
-def init_db():
-    import models
-    Base.metadata.create_all(bind=engine)
-init_db()
+Base.metadata.create_all(bind=engine)
 
 @app.route("/")
 def index():
@@ -47,6 +41,15 @@ def register():
 		return render_template("register.html")
 	elif request.method == 'POST':
 	    email = request.form['email']
-	    psw = request.form['psw']
-	    print(email,psw)
+	    pwd = request.form['psw']
+	    
+	    if(not("@" in email and "." in email)):
+	    	return "Please enter valid email"
+	    if(db_session.query(User).filter_by(email=email).first() != None):
+	    	return "email already registered"
+
+	    new_user = User(email=email, pwd=pwd)
+	    db_session.add(new_user)
+	    db_session.commit()
+	    print(email,pwd)
 	    return "Successfully submited your details  " + email
