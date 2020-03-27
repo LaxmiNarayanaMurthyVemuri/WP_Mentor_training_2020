@@ -1,7 +1,7 @@
 import os
 from flask import Flask, session
 from flask import render_template
-from flask import request
+from flask import request, flash, redirect, url_for
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
@@ -31,7 +31,7 @@ Base.metadata.create_all(bind=engine)
 
 @app.route("/")
 def index():
-	return "web site under construction"
+	return render_template("home.html")
 
 @app.route("/admin")
 def admin():
@@ -39,20 +39,35 @@ def admin():
 	return render_template("list.html", value=users)
 
 @app.route("/register",methods=['GET','POST'])
-def register():
+@app.route("/register/<int:a>",methods=['GET','POST'])
+def register(a = None):
+	print(a, "  deepak")
 	if request.method == 'GET':
-		return render_template("register.html")
+		if a == 1:
+			a = 'Please enter valid email'
+		elif a == 2:
+			a = 'Email is not register. Please register'
+		return render_template("register.html", value = a)
 	elif request.method == 'POST':
 	    email = request.form['email']
 	    pwd = request.form['psw']
 	    
 	    if(not("@" in email and "." in email)):
-	    	return "Please enter valid email"
+	    	return render_template("register.html", value="Please enter valid email")
 	    if(db_session.query(User).filter_by(email=email).first() != None):
-	    	return "email already registered"
+	    	return render_template("register.html", value="Email already registered please login")
 
 	    new_user = User(email=email, pwd=pwd)
 	    db_session.add(new_user)
-	    db_session.commit()
-	    print(email,pwd)
-	    return "Successfully submited your details  " + email
+	    return render_template("register.html", value="Sucessfully registered please login")
+
+@app.route("/auth",methods=['POST'])
+def auth():
+	email = request.form['email']
+	pwd = request.form['psw']
+	    
+	if(not("@" in email and "." in email)):
+		return redirect(url_for('register', a=1))
+	if(db_session.query(User).filter_by(email=email).first() == None):
+	    return redirect(url_for('register', a=2))
+	return redirect(url_for('index'))
