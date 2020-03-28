@@ -7,7 +7,8 @@ from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from models import User
+import models
+from models import Base, User
 
 
 app = Flask(__name__)
@@ -22,12 +23,17 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 
-# Set up database
+
 engine = create_engine(os.getenv("DATABASE_URL"))
 db_session = scoped_session(sessionmaker(bind=engine))
-Base = declarative_base()
 Base.query = db_session.query_property()
-Base.metadata.create_all(bind=engine)
+
+
+def init_db():
+    Base.metadata.create_all(bind=engine)
+init_db()
+
+
 
 #Home page
 @app.route("/")
@@ -46,7 +52,7 @@ def admin():
 
 #registration page
 @app.route("/register", methods=['GET', 'POST'])
-@app.route("/register/<int:a>", methods=['GET', 'POST'])
+@app.route("/register/<int:arg>", methods=['GET', 'POST'])
 def register(arg=None):
     """register a user in to database"""
     if request.method == 'GET':
@@ -64,11 +70,12 @@ def register(arg=None):
         pwd = request.form['psw']
         if not("@" in email and "." in email):
             return render_template("register.html", value="Please enter valid email")
-        if db_session.query(User).filter_by(email=email) != None:
+        if db_session.query(User).filter_by(email=email).first() is not None:
             return render_template("register.html", value="Email already registered please login")
 
         new_user = User(email=email, pwd=pwd)
         db_session.add(new_user)
+        db_session.commit()
         return render_template("register.html", value="Sucessfully registered please login")
 
 #authentication for login
@@ -79,7 +86,7 @@ def auth():
     pwd = request.form['psw']
     if not("@" in email and "." in email):
         return redirect(url_for('register', arg=1))
-    if db_session.query(User).filter_by(email=email) is None:
+    if db_session.query(User).filter_by(email=email).first() is None:
         return redirect(url_for('register', arg=2))
     user = db_session.query(User).filter_by(email=email)
     if user[0].email == email and user[0].pwd == pwd:
