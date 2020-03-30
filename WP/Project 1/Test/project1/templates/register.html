@@ -37,7 +37,7 @@ input[type=text], input[type=password] {
   margin: 8px 0;
   border: none;
   cursor: pointer;
-  width: 100%;
+  width: 30%;
   opacity: 0.9;
 }
 
@@ -57,7 +57,12 @@ input[type=text], input[type=password] {
     <label for="psw"><b>Password</b></label>
     <input type="password" placeholder="Enter Password" name="psw" required>
 
-    <button type="submit" class="registerbtn">submit</button>
+    <button type="submit" class="registerbtn">Register</button>
+
+    <button type="submit" class="registerbtn" formaction="/auth">Login</button><br>
+    {% if value is not none %}
+      {{value}}
+    {%endif %}
   </div>
 
   
