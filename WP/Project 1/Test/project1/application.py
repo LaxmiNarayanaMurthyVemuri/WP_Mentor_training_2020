@@ -4,11 +4,11 @@ from flask import Flask, session
 from flask import render_template
 from flask import request, redirect, url_for
 from flask_session import Session
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import models
-from models import Base, User
+from models import Base, User, Book
 
 
 app = Flask(__name__)
@@ -36,12 +36,29 @@ init_db()
 
 
 #Home page
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def index():
     """Return to home if already logged in else to registration"""
-    if session.get("email") is None:
-        return redirect(url_for('register', arg=4))
-    return render_template("home.html")
+    if request.method == 'GET':
+        if session.get("email") is None:
+            return redirect(url_for('register', arg=4))
+        return render_template("home.html", value = None)
+    elif request.method == 'POST':
+        qtype = request.form['type']
+        query = request.form['query']
+        print(qtype,query)
+        if qtype == 'ISBN':
+            books = db_session.query(Book).filter(or_(Book.isbn.like(f'%{query}'),Book.isbn.like(f'%{query}%'),Book.isbn.like(f'{query}%'), Book.isbn==query))
+        elif qtype == 'Name':
+            books = db_session.query(Book).filter(or_(Book.name.like(f'%{query}'),Book.name.like(f'%{query}%'),Book.name.like(f'{query}%'), Book.name==query))
+        elif qtype == 'author':
+            books = db_session.query(Book).filter(or_(Book.author.like(f'%{query}'),Book.author.like(f'%{query}%'),Book.author.like(f'{query}%'), Book.author==query))
+        elif qtype == 'year':
+            books = db_session.query(Book).filter(Book.year==query)
+        if books.first() == None:
+            return render_template("home.html", value = None, message = None) 
+        else:
+            return render_template("home.html", value = books) 
 
 #admin page
 @app.route("/admin")

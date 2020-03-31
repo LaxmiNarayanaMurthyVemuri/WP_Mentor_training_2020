@@ -2,9 +2,47 @@
 
 </head>
 <body>
-<form action="/logout">
-    <button type="submit" class="registerbtn" >Logout</button><br>
+
+<button type="submit" class="registerbtn" formaction = '/logout' >Logout</button><br><br>
+<form action="/" method = "post">
+	<label>select a field</label><br>
+    <select id="type" name = "type">
+  	<option value="ISBN">ISBN</option>
+  	<option value="Name">Name</option>
+  	<option value="author">author</option>
+  	<option value="year">year</option>
+	</select><br><br>
+	<label>Type your search result</label><br>
+	<input type="text" id="query" name="query"><br><br>
+	<input type="submit" value="Submit">
 </form>
-<h1>Web site under construction</h1>
 </body>
 </html>
+
+{% if message is none %}
+<P> No results found for your search </P>
+{%endif %}
+
+{% if value is not none %}
+<P>The following are the results found for your search</P><br>
+<table class="table" style="width:100%">
+  <thead class="thead-dark">
+  <tr>
+    <td>isbn</td>
+    <td>Name</td>		
+    <td>author</td>
+    <td>year</td>
+  </tr>
+  </thead>
+  <tbody>
+{% for i in value %}
+    <tr>
+        <td><a href="{{ ''.join(['/books?isbn=', i.isbn])}}">{{ i.isbn }}</a></td>
+        <td>{{ i.name }}</td>
+        <td>{{ i.author }}</td>
+        <td>{{ i.year }}</td>
+    </tr>
+{% endfor %}
+ </tbody>
+</table>
+ {%endif %}
