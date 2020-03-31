@@ -45,6 +45,9 @@ class BasicTests(unittest.TestCase):
 
     def books(self, type1, year):
         return self.app.post('/', data=dict(type=type1, query=year),follow_redirects=True)
+
+    def books_detail(self, type1):
+        return self.app.get('/books', data=dict(isbn=type1),follow_redirects=True)
  
 ###############
 #### tests ####
@@ -57,7 +60,17 @@ class BasicTests(unittest.TestCase):
     def test_register(self):
         response = self.app.get('/register', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
- 
+
+    def test_invalid_user_register(self):
+        response = self.register('admin@msitprogram.net', 'a1dmin')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Email already registered please login', response.data)
+
+    def test_invalid_user_registeremail(self):
+        response = self.register('adminmsitprogram.net', 'a1dmin')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Please enter valid email', response.data)
+
     def test_valid_user_login(self):
         response = self.login('admin@msitprogram.net', 'admin')
         self.assertEqual(response.status_code, 200)
@@ -77,6 +90,15 @@ class BasicTests(unittest.TestCase):
         books = db_session.query(Book).filter(Book.year==2020)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'No results found for your search', response.data)
+
+    def test_bookdetails(self):
+        response = self.app.get('/books', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_valid_bookdetails(self):
+        response = self.books_detail('0743484363')
+        book = db_session.query(Book).filter_by(isbn="0743484363").first()
+        self.assertEqual(response.status_code, 200)
 
 if __name__ == "__main__":
     unittest.main()
