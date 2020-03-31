@@ -2,7 +2,8 @@
 
 import os
 import unittest
-from application import app, db_session as db
+from application import *
+from models import Base, User, Book
 
 class BasicTests(unittest.TestCase):
  
@@ -19,6 +20,7 @@ class BasicTests(unittest.TestCase):
         # Check for environment variable
         if not os.getenv("DATABASE_URL"):
             raise RuntimeError("DATABASE_URL is not set")
+        Base.query = db_session.query_property()
         self.app = app.test_client()
  
         # Disable sending emails during unit testing
@@ -41,8 +43,8 @@ class BasicTests(unittest.TestCase):
     def logout(self):
         return self.app.get('/logout',follow_redirects=True)
 
-    def books(self):
-        return self.app.post('/', )
+    def books(self, type1, year):
+        return self.app.post('/', data=dict(type=type1, query=year),follow_redirects=True)
  
 ###############
 #### tests ####
@@ -64,6 +66,17 @@ class BasicTests(unittest.TestCase):
         response = self.login('admin@msitprogram.net', 'a1dmin')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'wrong password', response.data)
+
+    def test_valid_search(self):
+        response = self.books('year', 1994)
+        books = db_session.query(Book).filter(Book.year==1994)
+        self.assertEqual(response.status_code, 200)
+
+    def test_invalid_search(self):
+        response = self.books('year', 2020)
+        books = db_session.query(Book).filter(Book.year==2020)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'No results found for your search', response.data)
 
 if __name__ == "__main__":
     unittest.main()
