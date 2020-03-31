@@ -93,6 +93,7 @@ def register(arg=None):
         new_user = User(email=email, pwd=pwd)
         db_session.add(new_user)
         db_session.commit()
+        db_session.close()
         return render_template("register.html", value="Sucessfully registered please login")
 
 #authentication for login
@@ -124,6 +125,7 @@ def logout():
 def book_details():
     isbn = request.args.get('isbn')
     book = db_session.query(Book).filter_by(isbn=isbn).first()
+    db_session.close()
     # book.isbn, book.name, book.author, book.year = db_session.execute("SELECT isbn, name, author, year FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
     if request.method == "GET":
         return render_template("book_detail.html", book = book)
