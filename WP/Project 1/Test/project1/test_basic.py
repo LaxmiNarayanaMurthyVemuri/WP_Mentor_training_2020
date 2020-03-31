@@ -7,9 +7,9 @@ from models import Base, User, Book
 
 class BasicTests(unittest.TestCase):
  
-    ############################
-    #### setup and teardown ####
-    ############################
+############################
+#### setup and teardown ####
+############################
  
     # executed prior to each test
     def setUp(self):
