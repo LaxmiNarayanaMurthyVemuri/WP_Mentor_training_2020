@@ -123,8 +123,7 @@ def logout():
 @app.route("/books", methods=["GET"])
 def book_details():
     isbn = request.args.get('isbn')
-    book = Book("", "", "",isbn)
-    print("In this method")
-    book.isbn, book.name, book.author, book.year = db_session.execute("SELECT isbn, name, author, year FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+    book = db_session.query(Book).filter_by(isbn=isbn).first()
+    # book.isbn, book.name, book.author, book.year = db_session.execute("SELECT isbn, name, author, year FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
     if request.method == "GET":
         return render_template("book_detail.html", book = book)
