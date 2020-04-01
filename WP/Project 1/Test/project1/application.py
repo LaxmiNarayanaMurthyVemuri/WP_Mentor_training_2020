@@ -60,6 +60,8 @@ def index():
         else:
             return render_template("home.html", value = books) 
 
+
+
 #admin page
 @app.route("/admin")
 def admin():

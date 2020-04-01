@@ -7,9 +7,9 @@ from models import Base, User, Book
 
 class BasicTests(unittest.TestCase):
  
-############################
-#### setup and teardown ####
-############################
+    ############################
+    #### setup and teardown ####
+    ############################
  
     # executed prior to each test
     def setUp(self):
@@ -30,9 +30,9 @@ class BasicTests(unittest.TestCase):
     def tearDown(self):
         pass
  
-########################
-#### helper methods ####
-########################
+    ########################
+    #### helper methods ####
+    ########################
      
     def register(self, email, password):
         return self.app.post('/register',data=dict(email=email, psw=password),follow_redirects=True)
