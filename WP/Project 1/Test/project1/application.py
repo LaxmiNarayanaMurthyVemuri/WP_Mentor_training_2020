@@ -1,6 +1,6 @@
 """Application page for this flask app"""
 import os
-from flask import Flask, session
+from flask import Flask, session, jsonify
 from flask import render_template
 from flask import request, redirect, url_for
 from flask_session import Session
@@ -124,3 +124,11 @@ def book_details():
     if request.method == "GET":
         print(book[0], "    booksssss......")
         return render_template("book_detail.html", book=book[0])
+
+@app.route("/api/book/", methods=["GET"])
+def api_get_book():
+    isbn = request.args.get('isbn')
+    book = get_book_by_isbn(isbn)
+    if request.method == "GET":
+        book = book[0]
+        return jsonify(title=book.name, author=book.author, year=book.year, isbn=book.isbn)
