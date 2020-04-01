@@ -3,6 +3,9 @@ from models import User
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine, or_
 
+if not os.getenv("DATABASE_URL"):
+    raise RuntimeError("DATABASE_URL is not set")
+
 engine = create_engine(os.getenv("DATABASE_URL"))
 db_session = scoped_session(sessionmaker(bind=engine))
 

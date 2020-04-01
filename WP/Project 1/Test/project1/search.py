@@ -16,6 +16,3 @@ def search_book_by_type(qtype, query):
     elif qtype == 'year':
         books = db_session.query(Book).filter(Book.year==query)
     return books
-
-def get_book_by_isbn(isbn):
-    return db_session.query(Book).filter_by(isbn=isbn).first()
