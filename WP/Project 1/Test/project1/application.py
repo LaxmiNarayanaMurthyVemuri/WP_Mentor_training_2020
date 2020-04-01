@@ -129,6 +129,11 @@ def book_details():
 def api_get_book():
     isbn = request.args.get('isbn')
     book = get_book_by_isbn(isbn)
+    print(book.count())
     if request.method == "GET":
-        book = book[0]
-        return jsonify(title=book.name, author=book.author, year=book.year, isbn=book.isbn)
+        if book.count() != 1:
+            return (jsonify({"Error": "Invalid book ISBN"}), 422)
+            
+        else:
+            book = book[0]
+            return jsonify(title=book.name, author=book.author, year=book.year, isbn=book.isbn)
