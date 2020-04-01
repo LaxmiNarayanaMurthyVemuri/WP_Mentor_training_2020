@@ -9,7 +9,8 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import models
 from models import Base, User, Book
-from query_book import *
+from search import *
+from book_details import *
 from query_user import *
 
 
@@ -119,4 +120,5 @@ def book_details():
     book = get_book_by_isbn(isbn)
     # book.isbn, book.name, book.author, book.year = db_session.execute("SELECT isbn, name, author, year FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
     if request.method == "GET":
-        return render_template("book_detail.html", book = book)
+        print(book[0], "    booksssss......")
+        return render_template("book_detail.html", book=book[0])
