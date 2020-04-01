@@ -140,6 +140,10 @@ class BasicTests(unittest.TestCase):
         response = self.books_detail('0743484363')
         book = db_session.query(Book).filter_by(isbn="0743484363").first()
         self.assertEqual(response.status_code, 200)
+    
+    def test_valid_bookdetails(self):
+        response = self.app.get('/api/book', data=dict(isbn="0743484363"),follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
 
 if __name__ == "__main__":
     unittest.main()
