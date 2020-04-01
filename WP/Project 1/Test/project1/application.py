@@ -9,6 +9,8 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import models
 from models import Base, User, Book
+from query_book import *
+from query_user import *
 
 
 app = Flask(__name__)
@@ -28,7 +30,6 @@ engine = create_engine(os.getenv("DATABASE_URL"))
 db_session = scoped_session(sessionmaker(bind=engine))
 Base.query = db_session.query_property()
 
-
 def init_db():
     Base.metadata.create_all(bind=engine)
 init_db()
@@ -46,15 +47,7 @@ def index():
     elif request.method == 'POST':
         qtype = request.form['type']
         query = request.form['query']
-        print(qtype,query)
-        if qtype == 'ISBN':
-            books = db_session.query(Book).filter(or_(Book.isbn.like(f'%{query}'),Book.isbn.like(f'%{query}%'),Book.isbn.like(f'{query}%'), Book.isbn==query))
-        elif qtype == 'Name':
-            books = db_session.query(Book).filter(or_(Book.name.like(f'%{query}'),Book.name.like(f'%{query}%'),Book.name.like(f'{query}%'), Book.name==query))
-        elif qtype == 'author':
-            books = db_session.query(Book).filter(or_(Book.author.like(f'%{query}'),Book.author.like(f'%{query}%'),Book.author.like(f'{query}%'), Book.author==query))
-        elif qtype == 'year':
-            books = db_session.query(Book).filter(Book.year==query)
+        books = search_book_by_type(qtype, query)
         if books.first() == None:
             return render_template("home.html", value = None, message = None) 
         else:
@@ -64,7 +57,7 @@ def index():
 @app.route("/admin")
 def admin():
     """Return all the users in database"""
-    users = db_session.query(User)
+    users = get_allusers()
     return render_template("list.html", value=users)
 
 #registration page
@@ -87,13 +80,12 @@ def register(arg=None):
         pwd = request.form['psw']
         if not("@" in email and "." in email):
             return render_template("register.html", value="Please enter valid email")
-        if db_session.query(User).filter_by(email=email).first() is not None:
+        if get_user_by_email(email) is not None:
             return render_template("register.html", value="Email already registered please login")
 
+        
         new_user = User(email=email, pwd=pwd)
-        db_session.add(new_user)
-        db_session.commit()
-        db_session.close()
+        add_user(new_user)
         return render_template("register.html", value="Sucessfully registered please login")
 
 #authentication for login
@@ -104,9 +96,9 @@ def auth():
     pwd = request.form['psw']
     if not("@" in email and "." in email):
         return redirect(url_for('register', arg=1))
-    if db_session.query(User).filter_by(email=email).first() is None:
+    user = get_user_by_email(email)
+    if user is None:
         return redirect(url_for('register', arg=2))
-    user = db_session.query(User).filter_by(email=email)
     if user[0].email == email and user[0].pwd == pwd:
         session["email"] = user[0].email
         session["pwd"] = user[0].pwd
@@ -124,8 +116,7 @@ def logout():
 @app.route("/books", methods=["GET"])
 def book_details():
     isbn = request.args.get('isbn')
-    book = db_session.query(Book).filter_by(isbn=isbn).first()
-    db_session.close()
+    book = get_book_by_isbn(isbn)
     # book.isbn, book.name, book.author, book.year = db_session.execute("SELECT isbn, name, author, year FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
     if request.method == "GET":
         return render_template("book_detail.html", book = book)
