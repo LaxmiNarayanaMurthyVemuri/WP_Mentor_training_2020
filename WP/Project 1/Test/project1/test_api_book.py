@@ -1,4 +1,5 @@
 import os
+import json
 import unittest
 from book_details import *
 from application import app
@@ -25,10 +26,14 @@ class BasicTests(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_api_details(self):
+    def test_api_details_get(self):
         response = self.app.get('/api/book/?isbn=0399153942')
         self.assertEqual(response.status_code, 200)
- 
+    
+    def test_api_details_post(self):
+        response = self.app.post('/api/search/', data=json.dumps(dict(type="ISBN", query="0399153942")), content_type='application/json')
+        print(response)
+        self.assertEqual(response.status_code, 200)
 
 if __name__ == "__main__":
     unittest.main()
