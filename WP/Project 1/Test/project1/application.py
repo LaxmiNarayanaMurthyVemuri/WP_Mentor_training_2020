@@ -123,9 +123,10 @@ def book_details():
         print(book[0], "    booksssss......")
         return render_template("book_detail.html", book=book[0])
 
+#sending as parameters as string, so we have used GET request
 @app.route("/api/book/", methods=["GET"])
 def api_get_book():
-    isbn = request.args.get('isbn')
+    isbn = request.args.get('isbn') 
     book = get_book_by_isbn(isbn)
     print(book.count())
     if request.method == "GET":
@@ -135,7 +136,8 @@ def api_get_book():
             book = book[0]
             return jsonify(title=book.name, author=book.author, year=book.year, isbn=book.isbn)
 
-@app.route("/api/search/",methods=["POST"])
+# sending data as JSON, so we have used POST request
+@app.route("/api/search/", methods=["POST"])
 def api_search_isbn():
     print(request.is_json)
     if request.is_json:
@@ -158,6 +160,6 @@ def api_search_isbn():
             else:
                 return (jsonify({"Error": "Invalid key value"}), 400)
         else:
-            return (jsonify({"Error": "Invalid JSON"}), 400)
+            return (jsonify({"Error": "Invalid JSON data"}), 400)
     else:
         return (jsonify({"Error": "Invalid JSON type"}), 422)

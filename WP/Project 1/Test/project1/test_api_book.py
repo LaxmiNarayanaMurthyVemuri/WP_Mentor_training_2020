@@ -25,12 +25,8 @@ class BasicTests(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def get_api_details(self, isbn):
-        return self.app.post('/api/book/?',data=dict(isbn=isbn),follow_redirects=True)
-
-    def test_get_book_by_isbn(self):
-        response = self.get_api_details('0380795272')
-        print(response)
+    def test_api_details(self):
+        response = self.app.get('/api/book/?isbn=0399153942')
         self.assertEqual(response.status_code, 200)
  
 
