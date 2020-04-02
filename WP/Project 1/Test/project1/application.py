@@ -1,8 +1,6 @@
 """Application page for this flask app"""
 import os
-from flask import Flask, session, jsonify
-from flask import render_template
-from flask import request, redirect, url_for
+from flask import Flask, session, jsonify, render_template, request, redirect, url_for, request
 from flask_session import Session
 from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -137,3 +135,26 @@ def api_get_book():
         else:
             book = book[0]
             return jsonify(title=book.name, author=book.author, year=book.year, isbn=book.isbn)
+
+@app.route("/api/search/",methods=["POST"])
+def api_search_isbn():
+    if request.is_json:
+        content = request.get_json()
+        if 'type' in content and 'query' in content:
+            # type can be ISBN, Name, author, year
+            qtype = content['type']
+            query = content['query']
+            books = search_book_by_type(qtype, query)
+            if books:
+                l = []
+                books_json = {}
+                for book in books:
+                    d = {}
+                    d["isbn"] = book.isbn
+                    l.append(d)
+                books_json['books'] = l
+                return jsonify(books_json)
+    else:
+        return (jsonify({"Error": "Invalid JSON"}), 422)
+    print(content)
+    return "JSON posted"
