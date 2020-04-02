@@ -2,8 +2,12 @@
 
 import os
 import unittest
-from application import *
+from book_details import *
+from application import app
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy import create_engine, or_
 from models import Base, User, Book
+from flask import jsonify
 
 class BasicTests(unittest.TestCase):
  
@@ -22,8 +26,6 @@ class BasicTests(unittest.TestCase):
             raise RuntimeError("DATABASE_URL is not set")
         Base.query = db_session.query_property()
         self.app = app.test_client()
- 
-        # Disable sending emails during unit testing
         self.assertEqual(app.debug, False)
  
     # executed after each test
@@ -69,11 +71,6 @@ class BasicTests(unittest.TestCase):
         response = self.login('adminmsitprogram.net', 'a1dmin')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Please enter valid email', response.data)
-
-    def test_login(self):
-        response = self.login('murthy@msitprogram.net', 'a1dmin')
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Email is not register. Please register', response.data)
 
     def test_register(self):
         response = self.app.get('/register', follow_redirects=True)
@@ -131,19 +128,6 @@ class BasicTests(unittest.TestCase):
         books = db_session.query(Book).filter(Book.name=="Vemuri")
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'No results found for your search', response.data)
-
-    def test_bookdetails(self):
-        response = self.app.get('/books', follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_valid_bookdetails(self):
-        response = self.books_detail('0743484363')
-        book = db_session.query(Book).filter_by(isbn="0743484363").first()
-        self.assertEqual(response.status_code, 200)
-    
-    def test_valid_bookdetails(self):
-        response = self.app.get('/api/book', data=dict(isbn="0743484363"),follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
 
 if __name__ == "__main__":
     unittest.main()
