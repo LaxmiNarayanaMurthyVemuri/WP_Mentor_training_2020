@@ -23,6 +23,7 @@ def get_bookreads_api(isbn):
     response['name'] = book_info[0][0]
     response['author'] = book_info[0][1]
     response['year'] = book_info[0][2]
+    response['img'] = "http://covers.openlibrary.org/b/isbn/" + str(isbn) + ".jpg"
     return response
 
 print(get_bookreads_api("0399153942"))
