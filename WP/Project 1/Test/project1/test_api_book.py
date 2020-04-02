@@ -25,11 +25,14 @@ class BasicTests(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def get_api_details(self, isbn):
+        return self.app.post('/api/book/?',data=dict(isbn=isbn),follow_redirects=True)
+
     def test_get_book_by_isbn(self):
-        book1 = get_book_by_isbn("0399153942")
-        book2 = db_session.query(Book).filter_by(isbn="0399153942")
-        self.assertEqual(book1[0], book2[0])
-    
+        response = self.get_api_details('0380795272')
+        print(response)
+        self.assertEqual(response.status_code, 200)
+ 
 
 if __name__ == "__main__":
     unittest.main()

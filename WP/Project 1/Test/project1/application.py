@@ -131,7 +131,6 @@ def api_get_book():
     if request.method == "GET":
         if book.count() != 1:
             return (jsonify({"Error": "Invalid book ISBN"}), 422)
-            
         else:
             book = book[0]
             return jsonify(title=book.name, author=book.author, year=book.year, isbn=book.isbn)
