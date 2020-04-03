@@ -76,38 +76,6 @@ form.example::after {
 </body>
 </html> 
 <p id = "result"></p>
-<div id = "message">
-{% if message is none %}
-<P> No results found for your search </P>
-{%endif %}
-</div>
-
-<div id = "value">
-{% if value is not none %}
-<P>The following are the results found for your search</P>
-<table class="table" style="width:100%">
-  <thead class="thead-dark">
-  <tr>
-    <td><b>ISBN</b></td>
-    <td><b>Name</b></td>		
-    <td><b>Author</b></td>
-    <td><b>Year</b></td>
-  </tr>
-  </thead>
-  <tbody>
-{% for i in value %}
-    <tr>
-        <td><a href="{{ ''.join(['/books?isbn=', i.isbn])}}">{{ i.isbn }}</a></td>
-        <td>{{ i.name }}</td>
-        <td>{{ i.author }}</td>
-        <td>{{ i.year }}</td>
-    </tr>
-{% endfor %}
- </tbody>
-</table>
- {%endif %}
-</div>
-
  <script>
     function myFunction() {
         var r = document.getElementById("type");
@@ -138,6 +106,3 @@ form.example::after {
         xhr.send(data);
     }
     </script>
-
-
-
