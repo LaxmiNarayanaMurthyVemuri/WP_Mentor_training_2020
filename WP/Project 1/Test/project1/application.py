@@ -22,6 +22,10 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
 
+# Check for environment variable of GOODREADS_KEY
+if not os.getenv("GOODREADS_KEY"):
+    raise RuntimeError("GOODREADS_KEY is not set")
+
 # Configure session to use filesystem
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -88,10 +92,10 @@ def register(arg=None):
         email = request.form['email']
         pwd = request.form['psw']
         if not("@" in email and "." in email):
-        	logging.debug("enter valid email")
+            logging.debug("enter valid email")
             return render_template("register.html", value="Please enter valid email")
         if get_user_by_email(email) is not None:
-        	logging.debug("email id already exists")
+            logging.debug("email id already exists")
             return render_template("register.html", value="Email already registered please login")
 
         
@@ -142,7 +146,7 @@ def api_get_book():
     response_book = get_bookreads_api(isbn)
     if request.method == "GET":
         if book.count() != 1:
-        	logging.debug("invalid isbn number")
+            logging.debug("invalid isbn number")
             return (jsonify({"Error": "Invalid book ISBN"}), 422)
         else:
             book = book[0]
@@ -171,11 +175,11 @@ def api_search_isbn():
                     books_json['books'] = l
                     return jsonify(books_json)
             else:
-            	logging.debug("invalid key value error")
+                logging.debug("invalid key value error")
                 return (jsonify({"Error": "Invalid key value"}), 400)
         else:
-        	logging.debug("invalid json data error")
+            logging.debug("invalid json data error")
             return (jsonify({"Error": "Invalid JSON data"}), 400)
     else:
-    	logging.debug("invalid json type")
+        logging.debug("invalid json type")
         return (jsonify({"Error": "Invalid JSON type"}), 422)

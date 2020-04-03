@@ -1,4 +1,5 @@
 import os
+import logging
 import json
 import requests
 from models import User, Book
