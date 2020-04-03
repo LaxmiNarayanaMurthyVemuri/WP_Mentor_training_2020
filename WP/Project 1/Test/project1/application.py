@@ -1,5 +1,6 @@
 """Application page for this flask app"""
 import os
+import logging
 from flask import Flask, session, jsonify, render_template, request, redirect, url_for, request
 from flask_session import Session
 from flask_cors import CORS, cross_origin
@@ -26,11 +27,14 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+# logging all the events in a file by suing logging module in python
+logging.basicConfig(filename='logger.log',level=logging.DEBUG)
 
 
 engine = create_engine(os.getenv("DATABASE_URL"))
 db_session = scoped_session(sessionmaker(bind=engine))
 Base.query = db_session.query_property()
+logging.debug("database sessions created")
 
 def init_db():
     Base.metadata.create_all(bind=engine)
@@ -62,6 +66,7 @@ def index():
 def admin():
     """Return all the users in database"""
     users = get_allusers()
+    logging.debug("admin worked successfully")
     return render_template("list.html", value=users)
 
 #registration page
@@ -83,13 +88,16 @@ def register(arg=None):
         email = request.form['email']
         pwd = request.form['psw']
         if not("@" in email and "." in email):
+        	logging.debug("enter valid email")
             return render_template("register.html", value="Please enter valid email")
         if get_user_by_email(email) is not None:
+        	logging.debug("email id already exists")
             return render_template("register.html", value="Email already registered please login")
 
         
         new_user = User(email=email, pwd=pwd)
         add_user(new_user)
+        logging.debug("user successfully registered in db")
         return render_template("register.html", value="Sucessfully registered please login")
 
 #authentication for login
@@ -114,6 +122,7 @@ def auth():
 def logout():
     """Logout a user"""
     session.clear()
+    logging.debug("user logout")
     return redirect(url_for("register"))
 
 # To show a book details
@@ -133,9 +142,11 @@ def api_get_book():
     response_book = get_bookreads_api(isbn)
     if request.method == "GET":
         if book.count() != 1:
+        	logging.debug("invalid isbn number")
             return (jsonify({"Error": "Invalid book ISBN"}), 422)
         else:
             book = book[0]
+            logging.debug("successfull in database query")
             return jsonify(title=book.name, author=book.author, year=book.year, isbn=book.isbn, avg_ratings=response_book["average_rating"], img=response_book["img"])
 
 # sending data as JSON, so we have used POST request
@@ -160,8 +171,11 @@ def api_search_isbn():
                     books_json['books'] = l
                     return jsonify(books_json)
             else:
+            	logging.debug("invalid key value error")
                 return (jsonify({"Error": "Invalid key value"}), 400)
         else:
+        	logging.debug("invalid json data error")
             return (jsonify({"Error": "Invalid JSON data"}), 400)
     else:
+    	logging.debug("invalid json type")
         return (jsonify({"Error": "Invalid JSON type"}), 422)
