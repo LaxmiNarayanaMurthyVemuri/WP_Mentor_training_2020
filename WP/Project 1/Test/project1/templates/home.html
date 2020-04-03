@@ -82,15 +82,13 @@ form.example::after {
         var strUser = r.options[r.selectedIndex].value;
         var q = document.getElementById("query").value;
         var xhr = new XMLHttpRequest();
-        var url = "http://localhost:5000/api/search";
+        var url = "http://localhost:5000/api/search/";
         xhr.open("POST", url, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 var book = JSON.parse(xhr.responseText).books;
                 var s = "<P>The following are the results found for your search</P><br><b>ISBN</b><br>"
-
-                
                 for ( var i = 0; i < book.length; i++) {
                     s += "<a href= \"";
                     s += "/books?isbn=";
