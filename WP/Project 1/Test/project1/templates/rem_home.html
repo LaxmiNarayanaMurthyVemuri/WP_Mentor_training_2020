@@ -62,27 +62,25 @@ form.example::after {
 
 
 
-<div class="example" style="margin:auto;max-width:600px">
+<form class="example" action="/" method = "post" style="margin:auto;max-width:600px">
     <select id="type" name = "type">
     <option value="ISBN">ISBN</option>
     <option value="Name">Name</option>
     <option value="author">author</option>
     <option value="year">year</option>
   </select><br><br> 
-  <input type="text" placeholder="Search.." name="query" id = "query">
-  <button type="submit" onclick="myFunction()"><i class="fa fa-search"></i></button>
-</div>
+  <input type="text" placeholder="Search.." name="query">
+  <button type="submit"><i class="fa fa-search"></i></button>
+</form>
 
 </body>
 </html> 
 
-<div id = "message">
+
 {% if message is none %}
 <P> No results found for your search </P>
 {%endif %}
-</div>
 
-<div id = "value">
 {% if value is not none %}
 <P>The following are the results found for your search</P>
 <table class="table" style="width:100%">
@@ -106,31 +104,6 @@ form.example::after {
  </tbody>
 </table>
  {%endif %}
-</div>
-
- <script>
-    function myFunction() {
-        var r = document.getElementById("type");
-        var strUser = r.options[r.selectedIndex].value;
-        var q = document.getElementById("query").value;
-        var xhr = new XMLHttpRequest();
-        var url = "http://localhost:5000/api/search";
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                var json = JSON.parse(xhr.responseText);
-                console.log(json)
-                console.log(json.books)
-                console.log(json.books[0])
-                alert(json.books[0].isbn)
-                // for ( var i = 0; i < json.books.length; i++) {}
-            }
-        };
-        var data = JSON.stringify({ "type":"ISBN", "query":"0399153942" });
-        xhr.send(data);
-    }
-    </script>
 
 
 
