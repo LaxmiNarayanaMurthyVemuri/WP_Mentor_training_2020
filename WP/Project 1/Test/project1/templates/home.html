@@ -12,6 +12,30 @@ body {
   box-sizing: border-box;
 }
 
+
+/* Create two equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+  overflow: scroll;
+  overflow-x: hidden;
+}
+.column1 {
+  float: left;
+  width: 50%;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+  
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
 form.example input[type=text] {
   padding: 10px;
   font-size: 17px;
@@ -75,32 +99,71 @@ form.example::after {
 
 </body>
 </html> 
-<p id = "result"></p>
+
+<p id = "status"></p>
+<div class="row">
+    <div class="column">
+        <p id = "result"></p>
+    </div>
+    <div class="column1" >
+        <br><br><br>
+        <p id = "Bookdata"></p>
+    </div>
+  </div>
  <script>
     function myFunction() {
         var r = document.getElementById("type");
         var strUser = r.options[r.selectedIndex].value;
         var q = document.getElementById("query").value;
         var xhr = new XMLHttpRequest();
-        var url = "http://localhost:5000/api/search/";
+        var url = "http://localhost:5000/api/search";
         xhr.open("POST", url, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 var book = JSON.parse(xhr.responseText).books;
-                var s = "<P>The following are the results found for your search</P><br><b>ISBN</b><br>"
-                for ( var i = 0; i < book.length; i++) {
-                    s += "<a href= \"";
-                    s += "/books?isbn=";
-                    s+= book[i].isbn;
-                    s+= "\">";
-                    s+= book[i].isbn;
-                    s+= "</a><br>"
+                if(book.length == 0){
+                    document.getElementById("status").innerHTML = "No search results for your search";
+                    document.getElementById("result").innerHTML = "";
+                    document.getElementById("Bookdata").innerHTML = "";
+                }else{
+                    document.getElementById("status").innerHTML = "The following are the results found for your search"
+                    var s = "<b>ISBN</b><br>"                
+                    for ( var i = 0; i < book.length; i++) {
+                        s += "<Button onclick = \"getbook('"+ book[i].isbn.trim() + "')\">";
+                        s+= book[i].isbn;
+                        s+= "</Button><br>";
+                    }
+                    document.getElementById("result").innerHTML = s;
+                    document.getElementById("Bookdata").innerHTML = "";
                 }
-                document.getElementById("result").innerHTML = s;
+                
             }
         };
         var data = JSON.stringify({ "type":strUser, "query":q });
         xhr.send(data);
     }
+
+    function getbook(param){
+        var url = "http://localhost:5000/api/book/?isbn="+param;
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var json = JSON.parse(xhr.responseText);
+                var s ="<b>Book Details</b><br>"
+                s += "ISBN = " + json.isbn+"<br>";
+                s += "Name = " + json.title+"<br>";
+                s += "Author = " + json.author+"<br>";
+                s += "Year = " + json.year+"<br>";
+            }
+            document.getElementById("Bookdata").innerHTML = s
+        };xhr.send();
+
+    } 
+
+
     </script>
+
+
+
