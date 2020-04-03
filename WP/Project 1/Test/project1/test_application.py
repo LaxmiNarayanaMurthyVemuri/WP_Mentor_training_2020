@@ -105,29 +105,5 @@ class BasicTests(unittest.TestCase):
         books = db_session.query(Book).filter(Book.year==1994)
         self.assertEqual(response.status_code, 200)
 
-    def test_invalid_search_year(self):
-        response = self.books('year', 2020)
-        books = db_session.query(Book).filter(Book.year==2020)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'No results found for your search', response.data)
-
-    def test_invalid_search_isbn(self):
-        response = self.books('ISBN', "2058X")
-        books = db_session.query(Book).filter(Book.isbn=="2058X")
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'No results found for your search', response.data)
-
-    def test_invalid_search_author(self):
-        response = self.books('author', "Murthy")
-        books = db_session.query(Book).filter(Book.author=="Murthy")
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'No results found for your search', response.data)
-
-    def test_invalid_search_name(self):
-        response = self.books('Name', "Vemuri")
-        books = db_session.query(Book).filter(Book.name=="Vemuri")
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'No results found for your search', response.data)
-
 if __name__ == "__main__":
     unittest.main()
