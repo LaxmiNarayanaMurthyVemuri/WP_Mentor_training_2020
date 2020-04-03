@@ -116,7 +116,7 @@ form.example::after {
         var strUser = r.options[r.selectedIndex].value;
         var q = document.getElementById("query").value;
         var xhr = new XMLHttpRequest();
-        var url = "http://localhost:5000/api/search";
+        var url = "http://localhost:5000/api/search/";
         xhr.open("POST", url, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onreadystatechange = function () {
@@ -136,8 +136,7 @@ form.example::after {
                     }
                     document.getElementById("result").innerHTML = s;
                     document.getElementById("Bookdata").innerHTML = "";
-                }
-                
+                }  
             }
         };
         var data = JSON.stringify({ "type":strUser, "query":q });
@@ -159,11 +158,5 @@ form.example::after {
             }
             document.getElementById("Bookdata").innerHTML = s
         };xhr.send();
-
-    } 
-
-
+    }
     </script>
-
-
-
