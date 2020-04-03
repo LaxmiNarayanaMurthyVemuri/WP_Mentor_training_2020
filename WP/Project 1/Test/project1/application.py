@@ -2,6 +2,7 @@
 import os
 from flask import Flask, session, jsonify, render_template, request, redirect, url_for, request
 from flask_session import Session
+from flask_cors import CORS, cross_origin
 from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -13,6 +14,7 @@ from query_user import *
 
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
@@ -120,7 +122,6 @@ def book_details():
     book = get_book_by_isbn(isbn)
     # book.isbn, book.name, book.author, book.year = db_session.execute("SELECT isbn, name, author, year FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
     if request.method == "GET":
-        print(book[0], "    booksssss......")
         return render_template("book_detail.html", book=book[0])
 
 #sending as parameters as string, so we have used GET request
@@ -138,8 +139,8 @@ def api_get_book():
 
 # sending data as JSON, so we have used POST request
 @app.route("/api/search/", methods=["POST"])
+@cross_origin()
 def api_search_isbn():
-    print(request.is_json)
     if request.is_json:
         content = request.get_json()
         if 'type' in content and 'query' in content:
@@ -148,7 +149,7 @@ def api_search_isbn():
             if qtype in ["ISBN", "Name", "author","year"]:
                 query = content['query'].strip()
                 books = search_book_by_type(qtype, query)
-                if books:
+                if books is not None:
                     l = []
                     books_json = {}
                     for book in books:
