@@ -150,7 +150,7 @@ form.example::after {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 var json = JSON.parse(xhr.responseText);
                 var s ="<b>Book Details</b><br>"
-                s += "<img src="+ json.img + " width=\"190px\"><br>"
+                s += "<img src="+ json.img + " width=\"210px\"><br>"
                 s += "ISBN = " + json.isbn+"<br>";
                 s += "Name = " + json.title+"<br>";
                 s += "Author = " + json.author+"<br>";
