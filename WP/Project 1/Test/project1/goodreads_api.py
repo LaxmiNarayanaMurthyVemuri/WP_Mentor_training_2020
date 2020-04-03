@@ -26,4 +26,4 @@ def get_bookreads_api(isbn):
     response['img'] = "http://covers.openlibrary.org/b/isbn/" + str(isbn) + ".jpg"
     return response
 
-print(get_bookreads_api("0399153942"))
+#print(get_bookreads_api("0399153942"))

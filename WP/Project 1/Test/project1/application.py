@@ -11,6 +11,7 @@ from models import Base, User, Book
 from search import *
 from book_details import *
 from query_user import *
+from goodreads_api import get_bookreads_api
 
 
 app = Flask(__name__)
@@ -129,12 +130,13 @@ def book_details():
 def api_get_book():
     isbn = request.args.get('isbn') 
     book = get_book_by_isbn(isbn)
+    response_book = get_bookreads_api(isbn)
     if request.method == "GET":
         if book.count() != 1:
             return (jsonify({"Error": "Invalid book ISBN"}), 422)
         else:
             book = book[0]
-            return jsonify(title=book.name, author=book.author, year=book.year, isbn=book.isbn)
+            return jsonify(title=book.name, author=book.author, year=book.year, isbn=book.isbn, avg_ratings=response_book["average_rating"], img=response_book["img"])
 
 # sending data as JSON, so we have used POST request
 @app.route("/api/search/", methods=["POST"])

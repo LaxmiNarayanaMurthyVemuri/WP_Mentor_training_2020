@@ -16,17 +16,17 @@ body {
 /* Create two equal columns that floats next to each other */
 .column {
   float: left;
-  width: 50%;
+  width: 30%;
   padding: 10px;
-  height: 300px; /* Should be removed. Only for demonstration */
+  height: 500px; /* Should be removed. Only for demonstration */
   overflow: scroll;
   overflow-x: hidden;
 }
 .column1 {
   float: left;
-  width: 50%;
+  width: 70%;
   padding: 10px;
-  height: 300px; /* Should be removed. Only for demonstration */
+  height: 500px; /* Should be removed. Only for demonstration */
   
 }
 
@@ -106,7 +106,6 @@ form.example::after {
         <p id = "result"></p>
     </div>
     <div class="column1" >
-        <br><br><br>
         <p id = "Bookdata"></p>
     </div>
   </div>
@@ -151,10 +150,12 @@ form.example::after {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 var json = JSON.parse(xhr.responseText);
                 var s ="<b>Book Details</b><br>"
+                s += "<img src="+ json.img + " width=\"190px\"><br>"
                 s += "ISBN = " + json.isbn+"<br>";
                 s += "Name = " + json.title+"<br>";
                 s += "Author = " + json.author+"<br>";
                 s += "Year = " + json.year+"<br>";
+                s += "Average ratings = " + json.avg_ratings + "<br>"
             }
             document.getElementById("Bookdata").innerHTML = s
         };xhr.send();
