@@ -122,7 +122,6 @@ def book_details():
     book = get_book_by_isbn(isbn)
     # book.isbn, book.name, book.author, book.year = db_session.execute("SELECT isbn, name, author, year FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
     if request.method == "GET":
-        print(book[0], "    booksssss......")
         return render_template("book_detail.html", book=book[0])
 
 #sending as parameters as string, so we have used GET request
@@ -150,7 +149,7 @@ def api_search_isbn():
             if qtype in ["ISBN", "Name", "author","year"]:
                 query = content['query'].strip()
                 books = search_book_by_type(qtype, query)
-                if books:
+                if books is not None:
                     l = []
                     books_json = {}
                     for book in books:

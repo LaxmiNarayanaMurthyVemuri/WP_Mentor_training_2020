@@ -75,7 +75,7 @@ form.example::after {
 
 </body>
 </html> 
-
+<p id = "result"></p>
 <div id = "message">
 {% if message is none %}
 <P> No results found for your search </P>
@@ -119,15 +119,22 @@ form.example::after {
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
-                var json = JSON.parse(xhr.responseText);
-                console.log(json)
-                console.log(json.books)
-                console.log(json.books[0])
-                alert(json.books[0].isbn)
-                // for ( var i = 0; i < json.books.length; i++) {}
+                var book = JSON.parse(xhr.responseText).books;
+                var s = "<P>The following are the results found for your search</P><br><b>ISBN</b><br>"
+
+                
+                for ( var i = 0; i < book.length; i++) {
+                    s += "<a href= \"";
+                    s += "/books?isbn=";
+                    s+= book[i].isbn;
+                    s+= "\">";
+                    s+= book[i].isbn;
+                    s+= "</a><br>"
+                }
+                document.getElementById("result").innerHTML = s;
             }
         };
-        var data = JSON.stringify({ "type":"ISBN", "query":"0399153942" });
+        var data = JSON.stringify({ "type":strUser, "query":q });
         xhr.send(data);
     }
     </script>
