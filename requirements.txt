@@ -2,3 +2,6 @@ Flask
 Flask-Session
 psycopg2-binary
 SQLAlchemy
+
+# Heroku
+gunicorn==19.9.0
